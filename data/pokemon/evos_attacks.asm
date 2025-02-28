@@ -472,6 +472,7 @@ ClefairyEvosAttacks:
 	db 13, DOUBLESLAP
 	db 19, MINIMIZE
 	db 26, DEFENSE_CURL
+	db 30, DAZZ_GLM
 	db 34, METRONOME
 	db 43, MOONLIGHT
 	db 53, LIGHT_SCREEN
@@ -516,6 +517,7 @@ JigglypuffEvosAttacks:
 	db 14, DISABLE
 	db 19, ROLLOUT
 	db 24, DOUBLESLAP
+	db 25, DAZZ_GLM
 	db 29, REST
 	db 34, BODY_SLAM
 	db 39, DOUBLE_EDGE
@@ -1663,6 +1665,7 @@ MrMimeEvosAttacks:
 	db 31, ENCORE
 	db 36, PSYBEAM
 	db 41, BATON_PASS
+	db 44, DAZZ_GLM
 	db 46, SAFEGUARD
 	db 0 ; no more level-up moves
 
@@ -2381,6 +2384,7 @@ TogepiEvosAttacks:
 	db 1, CHARM
 	db 7, METRONOME
 	db 18, SWEET_KISS
+	db 20, DAZZ_GLM
 	db 25, ENCORE
 	db 31, SAFEGUARD
 	db 38, DOUBLE_EDGE
@@ -2394,6 +2398,7 @@ TogeticEvosAttacks:
 	db 18, SWEET_KISS
 	db 25, ENCORE
 	db 31, SAFEGUARD
+	db 35, DAZZ_GLM
 	db 38, DOUBLE_EDGE
 	db 0 ; no more level-up moves
 
@@ -2431,6 +2436,7 @@ MareepEvosAttacks:
 	db 23, COTTON_SPORE
 	db 30, LIGHT_SCREEN
 	db 37, THUNDER
+	db 39, DAZZ_GLM
 	db 0 ; no more level-up moves
 
 FlaaffyEvosAttacks:
@@ -2444,6 +2450,7 @@ FlaaffyEvosAttacks:
 	db 27, COTTON_SPORE
 	db 36, LIGHT_SCREEN
 	db 45, THUNDER
+	db 47, DAZZ_GLM
 	db 0 ; no more level-up moves
 
 AmpharosEvosAttacks:
@@ -2457,6 +2464,7 @@ AmpharosEvosAttacks:
 	db 27, COTTON_SPORE
 	db 30, THUNDERPUNCH
 	db 42, LIGHT_SCREEN
+	db 51, DAZZ_GLM
 	db 57, THUNDER
 	db 0 ; no more level-up moves
 
