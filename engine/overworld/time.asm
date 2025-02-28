@@ -110,6 +110,7 @@ CheckDailyResetTimer::
 	ld [hli], a ; wDailyFlags2
 	ld [hli], a ; wSwarmFlags
 	ld [hl], a  ; wUnusedDailyFlag
+	ld [wLuckyNumberShowFlag], a ;daily lottery ticket
 	ld hl, wDailyRematchFlags
 rept 4
 	ld [hli], a
