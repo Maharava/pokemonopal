@@ -6208,7 +6208,12 @@ LoadEnemyMon:
 
 .Happiness:
 ; Set happiness
+	ld a, [wBattleMode]
+	dec a
+	ld a, $ff ;give enemy max Happiness
+	jr nz, .load_happiness ;if it's in a trainer battle
 	ld a, BASE_HAPPINESS
+.load_happiness
 	ld [wEnemyMonHappiness], a
 ; Set level
 	ld a, [wCurPartyLevel]

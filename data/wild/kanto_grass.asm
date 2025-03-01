@@ -66,7 +66,7 @@ KantoGrassWildMons:
 	db 12, MACHOP
 	db 12, ZUBAT
 	db 15, MACHOKE
-	db 12, MAROWAK
+	db 12, MANKEY
 	db 12, MAROWAK
 	; day
 	db 10, CUBONE
@@ -74,12 +74,12 @@ KantoGrassWildMons:
 	db 12, MACHOP
 	db 12, ZUBAT
 	db 15, MACHOKE
-	db 12, MAROWAK
+	db 12, MANKEY
 	db 12, MAROWAK
 	; nite
 	db 12, ZUBAT
 	db 11, GEODUDE
-	db 12, GEODUDE
+	db 12, MANKEY
 	db 17, HAUNTER
 	db 15, ZUBAT
 	db 15, ZUBAT
@@ -94,13 +94,13 @@ KantoGrassWildMons:
 	db 16, ONIX
 	db 12, ZUBAT
 	db 15, MAROWAK
-	db 15, KANGASKHAN
+	db 15, MANKEY
 	db 15, KANGASKHAN
 	; day
 	db 12, CUBONE
 	db 14, GEODUDE
 	db 16, ONIX
-	db 12, ZUBAT
+	db 12, MANKEY
 	db 15, MAROWAK
 	db 15, KANGASKHAN
 	db 15, KANGASKHAN
@@ -108,7 +108,7 @@ KantoGrassWildMons:
 	db 12, ZUBAT
 	db 14, GEODUDE
 	db 16, ONIX
-	db 15, ZUBAT
+	db 15, MANKEY
 	db 15, HAUNTER
 	db 15, GOLBAT
 	db 15, GOLBAT
@@ -150,7 +150,7 @@ KantoGrassWildMons:
 	db 24, GOLBAT
 	db 21, SLOWPOKE
 	db 20, RATTATA
-	db 23, SLOWPOKE
+	db 23, VULPIX
 	db 23, SLOWPOKE
 	; day
 	db 22, ZUBAT
@@ -158,7 +158,7 @@ KantoGrassWildMons:
 	db 24, GOLBAT
 	db 21, SLOWPOKE
 	db 20, RATTATA
-	db 23, SLOWPOKE
+	db 23, VULPIX
 	db 23, SLOWPOKE
 	; nite
 	db 22, ZUBAT
@@ -166,7 +166,7 @@ KantoGrassWildMons:
 	db 24, GOLBAT
 	db 21, SLOWPOKE
 	db 20, RATTATA
-	db 23, SLOWPOKE
+	db 23, VULPIX
 	db 23, SLOWPOKE
 	end_grass_wildmons
 
@@ -178,7 +178,7 @@ KantoGrassWildMons:
 	db 3, SENTRET
 	db 3, PIDGEY
 	db 6, FURRET
-	db 4, PIDGEY
+	db 4, MAREEP
 	db 4, PIDGEY
 	; day
 	db 2, PIDGEY
@@ -186,7 +186,7 @@ KantoGrassWildMons:
 	db 3, SENTRET
 	db 3, PIDGEY
 	db 6, FURRET
-	db 4, PIDGEY
+	db 4, MAREEP
 	db 4, PIDGEY
 	; nite
 	db 2, HOOTHOOT
@@ -211,7 +211,7 @@ KantoGrassWildMons:
 	; day
 	db 3, CATERPIE
 	db 3, PIDGEY
-	db 5, PIDGEY
+	db 5, MAREEP
 	db 7, BUTTERFREE
 	db 7, PIDGEOTTO
 	db 4, PIKACHU

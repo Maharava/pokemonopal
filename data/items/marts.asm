@@ -38,11 +38,12 @@ Marts:
 	assert_table_length NUM_MARTS
 
 MartCherrygrove:
-	db 4 ; # items
+	db 5 ; # items
 	db POTION
 	db ANTIDOTE
 	db PARLYZ_HEAL
 	db AWAKENING
+	db OLD_AMBER
 	db -1 ; end
 
 MartCherrygroveDex:
