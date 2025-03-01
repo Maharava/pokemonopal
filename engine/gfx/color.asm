@@ -1,39 +1,33 @@
 INCLUDE "engine/gfx/sgb_layouts.asm"
-
-DEF SHINY_ATK_MASK EQU %0010
-DEF SHINY_DEF_DV EQU 10
-DEF SHINY_SPD_DV EQU 10
-DEF SHINY_SPC_DV EQU 10
+DEF SHINY_DV_THRESHOLD EQU 13  ; New minimum DV for shininess
 
 CheckShininess:
 ; Check if a mon is shiny by DVs at bc.
-; Return carry if shiny.
-
-	ld l, c
-	ld h, b
-
-; Attack
-	ld a, [hl]
-	and SHINY_ATK_MASK << 4
-	jr z, .not_shiny
-
-; Defense
-	ld a, [hli]
-	and %1111
-	cp SHINY_DEF_DV
-	jr nz, .not_shiny
-
-; Speed
-	ld a, [hl]
-	and %1111 << 4
-	cp SHINY_SPD_DV << 4
-	jr nz, .not_shiny
-
-; Special
-	ld a, [hl]
-	and %1111
-	cp SHINY_SPC_DV
-	jr nz, .not_shiny
+; Return carry if shiny (all DVs >= 11).
+    ld l, c
+    ld h, b
+; Attack (in high nibble of first byte)
+    ld a, [hl]
+    swap a       ; Move high nibble to low nibble
+    and %1111    ; Mask out the low nibble
+    cp SHINY_DV_THRESHOLD
+    jr c, .not_shiny
+; Defense (in low nibble of first byte)
+    ld a, [hli]
+    and %1111
+    cp SHINY_DV_THRESHOLD
+    jr c, .not_shiny
+; Speed (in high nibble of second byte)
+    ld a, [hl]
+    swap a       ; Move high nibble to low nibble
+    and %1111    ; Mask out the low nibble
+    cp SHINY_DV_THRESHOLD
+    jr c, .not_shiny
+; Special (in low nibble of second byte)
+    ld a, [hl]
+    and %1111
+    cp SHINY_DV_THRESHOLD
+    jr c, .not_shiny
 
 ; shiny
 	scf

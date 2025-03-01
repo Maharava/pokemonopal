@@ -308,10 +308,10 @@ ChooseWildEncounter:
 	cp 80 percent
 	jr c, .ok
 	inc b
-	cp 95 percent
+	cp 90 percent
 	jr c, .ok
 	inc b
-	cp 98 percent
+	cp 95 percent
 	jr c, .ok
 	inc b
 	cp 99 percent
