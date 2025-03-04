@@ -431,7 +431,7 @@ JohtoGrassWildMons:
 	db 4, RATTATA
 	db 7, ZUBAT
 	db 6, ONIX
-	db 6, ONIX
+	db 6, SQUIRTLE
 	; day
 	db 6, GEODUDE
 	db 6, SANDSHREW
@@ -439,7 +439,7 @@ JohtoGrassWildMons:
 	db 4, RATTATA
 	db 7, ZUBAT
 	db 6, ONIX
-	db 6, ONIX
+	db 6, SQUIRTLE
 	; nite
 	db 6, GEODUDE
 	db 6, RATTATA
@@ -627,7 +627,7 @@ JohtoGrassWildMons:
 	db 14, RATICATE
 	db 15, ZUBAT
 	db 15, GOLBAT
-	db 25, HOUDOOM
+	db 25, HOUNDOOM
 	; day
 	db 13, GEODUDE
 	db 14, RATTATA
@@ -653,17 +653,17 @@ JohtoGrassWildMons:
 	db 32, MACHOKE
 	db 31, GEODUDE
 	db 30, RATICATE
-	db 28, HOUDOUR
+	db 28, HOUNDOUR
 	db 30, GOLBAT
-	db 30, HOUDOOM
+	db 30, HOUNDOOM
 	; day
 	db 31, GRAVELER
 	db 32, MACHOKE
 	db 31, GEODUDE
 	db 30, RATICATE
-	db 28, HOUDOUR
+	db 28, HOUNDOUR
 	db 30, GOLBAT
-	db 30, HOUDOOM
+	db 30, HOUNDOOM
 	; nite
 	db 31, GRAVELER
 	db 31, GEODUDE
@@ -682,7 +682,7 @@ JohtoGrassWildMons:
 	db 17, GOLBAT
 	db 16, MACHOP
 	db 16, GEODUDE
-	db 18, HOUDOUR
+	db 18, HOUNDOUR
 	db 18, RATICATE
 	; day
 	db 15, ZUBAT
@@ -690,7 +690,7 @@ JohtoGrassWildMons:
 	db 17, GOLBAT
 	db 16, MACHOP
 	db 16, GEODUDE
-	db 18, HOUDOUR
+	db 18, HOUNDOUR
 	db 18, RATICATE
 	; nite
 	db 15, ZUBAT
