@@ -579,8 +579,8 @@ PoisonBarbDesc:
 	next "type moves. (HOLD)@"
 
 KingsRockDesc:
-	db   "May make the foe"
-	next "flinch. (HOLD)@"
+	db   "Evolves certain"
+	next "#MON.@"
 
 BitterBerryDesc:
 	db   "A self-cure for"
@@ -809,8 +809,8 @@ TeruSama13Desc:
 	db   "?@"
 
 MetalCoatDesc:
-	db   "Powers up steel-"
-	next "type moves. (HOLD)@"
+	db   "A strange, fluid"
+	next "metal.@"
 
 DragonFangDesc:
 	db   "Powers up dragon-"

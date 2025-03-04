@@ -4,6 +4,8 @@
 	const BURNEDTOWER1F_RIVAL
 	const BURNEDTOWER1F_MORTY
 	const BURNEDTOWER1F_POKE_BALL
+	const BURNEDTOWER1F_FOSSIKER
+	
 
 BurnedTower1F_MapScripts:
 	def_scene_scripts
@@ -136,6 +138,58 @@ BurnedTower1FHiddenUltraBall:
 
 BurnedTower1FHPUp:
 	itemball HP_UP
+	
+BurnedTower1FMetalCoat:
+	faceplayer
+	opentext
+	checkevent EVENT_BURNED_TOWER_METAL_COAT
+	iftrue .AlreadyGotItem
+	readvar VAR_DEXCAUGHT
+	ifgreater 1, .FossikerMetalCoat
+	waitbutton
+	closetext
+	end
+	
+.AlreadyGotItem
+	writetext FossikerFail
+	waitbutton
+	closetext
+	end
+
+.FossikerMetalCoat
+	writetext FossikerSuccess
+	;giveitem METAL_COAT
+	promptbutton
+	verbosegiveitem METAL_COAT
+	iffalse .NoRoom
+	setevent EVENT_BURNED_TOWER_METAL_COAT
+	waitbutton
+	closetext
+	end
+
+.NoRoom:
+	writetext FossikerNoRoom
+	waitbutton
+	closetext
+	end
+
+FossikerSuccess:
+	text "I found this stra-"
+	line "nge metal in the "
+
+	para "ruins. I don't "
+	line "need it. Here."
+	done
+
+FossikerFail:
+	text "I wonder what"
+	line "caused the fire."
+	done
+	
+FossikerNoRoom:
+	text "Ah, your PACK"
+	line "is full."
+	done
 
 BurnedTowerMovement_PlayerWalksToRival:
 	step LEFT
@@ -307,3 +361,4 @@ BurnedTower1F_MapEvents:
 	object_event  8,  9, SPRITE_RIVAL, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, OBJECTTYPE_TRAINER, 3, ObjectEvent, EVENT_RIVAL_BURNED_TOWER
 	object_event 14, 14, SPRITE_MORTY, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, PAL_NPC_BROWN, OBJECTTYPE_SCRIPT, 0, BurnedTower1FMortyScript, EVENT_BURNED_TOWER_MORTY
 	object_event 14,  2, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, BurnedTower1FHPUp, EVENT_BURNED_TOWER_1F_HP_UP
+	object_event  8, 13, SPRITE_FISHER, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BROWN, OBJECTTYPE_SCRIPT, 0, BurnedTower1FMetalCoat, -1
