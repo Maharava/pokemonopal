@@ -171,7 +171,7 @@ MartGoldenrod5F4:
 	db -1 ; end
 
 MartOlivine:
-	db 9 ; # items
+	db 10 ; # items
 	db GREAT_BALL
 	db SUPER_POTION
 	db HYPER_POTION
@@ -181,6 +181,7 @@ MartOlivine:
 	db ICE_HEAL
 	db SUPER_REPEL
 	db SURF_MAIL
+	db TM_ROCK_SMASH
 	db -1 ; end
 
 MartEcruteak:

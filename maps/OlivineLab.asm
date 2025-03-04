@@ -1,5 +1,9 @@
 	object_const_def
 	const OLIVINELAB_SCIENTIST
+	const OLIVINELAB_ROCK1
+	const OLIVINELAB_ROCK2
+	const OLIVINELAB_ROCK3
+	const OLIVINELAB_ROCK4
 
 OlivineLab_MapScripts:
 	def_scene_scripts
@@ -153,6 +157,9 @@ FossilScientist:
 	db "HELIX FOSSIL@"
 	db "CANCEL@"
 
+OlivineLabRock:
+	jumpstd SmashRockScript
+	
 FossilScientistIntroText:
 	text "Hiya!"
 
@@ -240,3 +247,6 @@ OlivineLab_MapEvents:
 
 	def_object_events
 	object_event 12, 3, SPRITE_SCIENTIST, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, FossilScientist, -1
+	object_event  14, 6, SPRITE_ROCK, SPRITEMOVEDATA_SMASHABLE_ROCK, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, OlivineLabRock, -1
+	object_event  15, 6, SPRITE_ROCK, SPRITEMOVEDATA_SMASHABLE_ROCK, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, OlivineLabRock, -1
+	object_event  16, 6, SPRITE_ROCK, SPRITEMOVEDATA_SMASHABLE_ROCK, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, OlivineLabRock, -1
