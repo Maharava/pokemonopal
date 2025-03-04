@@ -775,6 +775,9 @@ OlivineLighthouse5F_Blocks:
 
 OlivineLighthouse6F_Blocks:
 	INCBIN "maps/OlivineLighthouse6F.blk"
+	
+OlivineLab_Blocks:
+	INCBIN "maps/OlivineLab.blk"
 
 
 SECTION "Map Blocks 3", ROMX
