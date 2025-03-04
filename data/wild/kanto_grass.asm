@@ -145,29 +145,29 @@ KantoGrassWildMons:
 	def_grass_wildmons TOHJO_FALLS
 	db 6 percent, 6 percent, 6 percent ; encounter rates: morn/day/nite
 	; morn
-	db 22, ZUBAT
-	db 22, RATICATE
-	db 24, GOLBAT
-	db 21, SLOWPOKE
-	db 20, RATTATA
-	db 23, VULPIX
-	db 23, SLOWPOKE
+	db 42, ZUBAT
+	db 42, RATICATE
+	db 44, GOLBAT
+	db 41, SLOWPOKE
+	db 40, RATTATA
+	db 43, VULPIX
+	db 43, SLOWPOKE
 	; day
-	db 22, ZUBAT
-	db 22, RATICATE
-	db 24, GOLBAT
-	db 21, SLOWPOKE
-	db 20, RATTATA
-	db 23, VULPIX
-	db 23, SLOWPOKE
+	db 42, ZUBAT
+	db 42, RATICATE
+	db 44, GOLBAT
+	db 41, SLOWPOKE
+	db 40, RATTATA
+	db 43, VULPIX
+	db 43, SLOWPOKE
 	; nite
-	db 22, ZUBAT
-	db 22, RATICATE
-	db 24, GOLBAT
-	db 21, SLOWPOKE
-	db 20, RATTATA
-	db 23, VULPIX
-	db 23, SLOWPOKE
+	db 42, ZUBAT
+	db 42, RATICATE
+	db 44, GOLBAT
+	db 41, SLOWPOKE
+	db 40, RATTATA
+	db 43, VULPIX
+	db 43, SLOWPOKE
 	end_grass_wildmons
 
 	def_grass_wildmons ROUTE_1
