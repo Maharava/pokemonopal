@@ -331,7 +331,7 @@ DEF UNOWN_WALL_MENU_HEADER_SIZE EQU 5
 	
 ; FossilScientist setval arguments
 	const_def 1
-	const REVIVE_DOME_FOSSIL ; 1
+	const REVIVE_OLD_AMBER ;1
+	const REVIVE_DOME_FOSSIL ; 2
 	const REVIVE_HELIX_FOSSIL  ; 2
-	const REVIVE_OLD_AMBER     ; 3
 

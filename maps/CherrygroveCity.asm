@@ -215,8 +215,10 @@ FossilScientistMonText:
 	text "Oh! That is"
 	line "a fossil!"
 
-	para "It is a fossil of"
-	line "a rare #MON!@"
+	para "It is fossil of"
+	line "@"
+	text_ram wStringBuffer3
+	text ", a"
 
 	para "#MON that is"
 	line "already extinct!"
