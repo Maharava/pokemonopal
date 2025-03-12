@@ -1710,5 +1710,32 @@ JohtoGrassWildMons:
 	db 44, GOLBAT
 	end_grass_wildmons
 
+	def_grass_wildmons MEW_GROVE
+	db 1 percent, 1 percent, 1 percent ; encounter rates: morn/day/nite
+	; morn
+	db 4, CATERPIE
+	db 6, SUNKERN
+	db 5, FARFETCH_D
+	db 4, RATTATA
+	db 6, PORYGON
+	db 8, CHANSEY
+	db 8, DITTO
+	; day
+	db 4, WEEDLE
+	db 6, BELLSPROUT
+	db 5, EXEGGCUTE
+	db 4, MILTANK
+	db 6, PORYGON
+	db 8, CHANSEY
+	db 8, ESPEON
+	; nite
+	db 4, ZUBAT
+	db 6, ODDISH
+	db 5, GASTLY
+	db 4, PORYGON
+	db 6, GASTLY
+	db 8, MISDREAVUS
+	db 8, UMBREON
+	end_grass_wildmons
 
 	db -1 ; end

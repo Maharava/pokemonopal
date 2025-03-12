@@ -10,6 +10,7 @@
 	const ILEXFOREST_POKE_BALL2
 	const ILEXFOREST_POKE_BALL3
 	const ILEXFOREST_POKE_BALL4
+	const MEW_GUARDIAN
 
 IlexForest_MapScripts:
 	def_scene_scripts
@@ -340,6 +341,14 @@ IlexForestFarfetchdScript:
 	waitbutton
 	closetext
 	readvar VAR_FACING
+	end
+	
+MewGuardian:
+	faceplayer
+	opentext
+	writetext MewGuardian_Text
+	waitbutton
+	closetext
 	end
 
 IlexForestCharcoalMasterScript:
@@ -772,6 +781,11 @@ Text_ItsTheMissingPokemon:
 Text_Kwaaaa:
 	text "FARFETCH'D: Kwaa!"
 	done
+	
+MewGuardian_Text:
+	text "Two watch you..."
+	line "and wait..."
+	done
 
 Text_CharcoalMasterIntro:
 	text "Ah! My FARFETCH'D!"
@@ -941,6 +955,8 @@ IlexForest_MapEvents:
 	warp_event  1,  5, ROUTE_34_ILEX_FOREST_GATE, 3
 	warp_event  3, 42, ILEX_FOREST_AZALEA_GATE, 1
 	warp_event  3, 43, ILEX_FOREST_AZALEA_GATE, 2
+	warp_event 23, 38, MEW_GROVE, 1;
+	warp_event 23, 39, MEW_GROVE, 2
 
 	def_coord_events
 
@@ -963,3 +979,4 @@ IlexForest_MapEvents:
 	object_event  9, 17, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, IlexForestXAttack, EVENT_ILEX_FOREST_X_ATTACK
 	object_event 17,  7, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, IlexForestAntidote, EVENT_ILEX_FOREST_ANTIDOTE
 	object_event 27,  1, SPRITE_POKE_BALL, SPRITEMOVEDATA_STILL, 0, 0, -1, -1, 0, OBJECTTYPE_ITEMBALL, 0, IlexForestEther, EVENT_ILEX_FOREST_ETHER
+	object_event  22, 36, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, MewGuardian, EVENT_BEAT_ELITE_FOUR
