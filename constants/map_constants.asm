@@ -222,6 +222,7 @@ ENDM
 	map_const AZALEA_GYM,                                   5,  8 ;  5
 	map_const ROUTE_33,                                    10,  9 ;  6
 	map_const AZALEA_TOWN,                                 20,  9 ;  7
+	map_const MEW_GROVE,                                    5,  5 ;  8
 	endgroup
 
 	newgroup LAKE_OF_RAGE                                         ;  9
@@ -503,4 +504,4 @@ ENDM
 	map_const ROUTE_31_VIOLET_GATE,                         5,  4 ; 11
 	endgroup
 
-DEF NUM_MAP_GROUPS EQU const_value ; 26
+DEF NUM_MAP_GROUPS EQU const_value ; 27

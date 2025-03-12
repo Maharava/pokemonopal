@@ -1048,5 +1048,10 @@ BetaBlank_Blocks: ; unreferenced
 
 GoldenrodDeptStoreRoof_Blocks:
 	INCBIN "maps/GoldenrodDeptStoreRoof.blk"
+	
+SECTION "Map Blocks 4", ROMX
+
+MewGrove_Blocks:
+	INCBIN "maps/MewGrove.blk"
 
 ENDSECTION

@@ -1710,4 +1710,5 @@ JohtoGrassWildMons:
 	db 44, GOLBAT
 	end_grass_wildmons
 
+
 	db -1 ; end
