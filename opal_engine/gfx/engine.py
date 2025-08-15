@@ -45,32 +45,34 @@ def get_tile_palette_map(file_path):
                     tile_palette_map.append(part.strip().upper())
     return tile_palette_map
 
-# Helper function to convert 2bpp tile data to Pygame Surface
-def convert_2bpp_to_surface(tile_data):
-    surface = pygame.Surface((TILE_SIZE, TILE_SIZE), depth=8)
-    for y in range(TILE_SIZE):
-        byte1 = tile_data[y * 2]
-        byte2 = tile_data[y * 2 + 1]
-        for x in range(TILE_SIZE):
-            # Extract 2-bit color index
-            color_index = ((byte1 >> (7 - x)) & 1) | (((byte2 >> (7 - x)) & 1) << 1)
-            surface.set_at((x, y), color_index)
-    return surface
-
-# Helper function to load 2bpp tiles from a file
-def load_2bpp_tiles(filepath, num_tiles):
+# Helper function to load animated tiles from a PNG file
+def load_animated_tiles_from_png(filepath):
     tiles = []
     try:
-        with open(filepath, 'rb') as f:
-            data = f.read()
-            for i in range(num_tiles):
-                tile_data = data[i * 16 : (i + 1) * 16]
-                if len(tile_data) == 16:
-                    tiles.append(convert_2bpp_to_surface(tile_data))
-                else:
-                    print(f"Warning: Incomplete tile data for tile {i} in {filepath}")
+        img = Image.open(filepath).convert("RGBA")
+        for i in range(img.height // TILE_SIZE):
+            surface = pygame.Surface((TILE_SIZE, TILE_SIZE), depth=8)
+            for y in range(TILE_SIZE):
+                for x in range(TILE_SIZE):
+                    r, g, b, a = img.getpixel((x, i * TILE_SIZE + y))
+                    if a == 0:
+                        # Transparent, so use color 0
+                        palette_index = 0
+                    else:
+                        # Map grayscale to one of the 4 palette colors
+                        grayscale = (r + g + b) // 3
+                        if grayscale < 64:
+                            palette_index = 0
+                        elif grayscale < 128:
+                            palette_index = 1
+                        elif grayscale < 192:
+                            palette_index = 2
+                        else:
+                            palette_index = 3
+                    surface.set_at((x, y), palette_index)
+            tiles.append(surface)
     except FileNotFoundError:
-        print(f"Error: 2bpp file not found at {filepath}")
+        print(f"Error: PNG file not found at {filepath}")
     return tiles
 
 def main():
@@ -92,13 +94,13 @@ def main():
         tile_palette_map = get_tile_palette_map(kanto_palette_map_path)
 
         # Load animation frames
-        water_2bpp_path = os.path.join(project_root, 'gfx', 'tilesets', 'water', 'water.2bpp')
-        water_animation_frames = load_2bpp_tiles(water_2bpp_path, 4)
+        water_png_path = os.path.join(project_root, 'gfx', 'tilesets', 'water', 'water.png')
+        water_animation_frames = load_animated_tiles_from_png(water_png_path)
 
-        flower_cgb_1_2bpp_path = os.path.join(project_root, 'gfx', 'tilesets', 'flower', 'cgb_1.2bpp')
-        flower_cgb_2_2bpp_path = os.path.join(project_root, 'gfx', 'tilesets', 'flower', 'cgb_2.2bpp')
-        flower_animation_frames_cgb = load_2bpp_tiles(flower_cgb_1_2bpp_path, 1) + \
-                                      load_2bpp_tiles(flower_cgb_2_2bpp_path, 1)
+        flower_cgb_1_png_path = os.path.join(project_root, 'gfx', 'tilesets', 'flower', 'cgb_1.png')
+        flower_cgb_2_png_path = os.path.join(project_root, 'gfx', 'tilesets', 'flower', 'cgb_2.png')
+        flower_animation_frames_cgb = load_animated_tiles_from_png(flower_cgb_1_png_path) + \
+                                      load_animated_tiles_from_png(flower_cgb_2_png_path)
 
     except (IOError, FileNotFoundError) as e:
         print(f"Error loading assets: {e}")
