@@ -12,10 +12,6 @@ BLOCK_WIDTH = 4
 # BLOCK_HEIGHT: The number of tiles vertically in a metatile block.
 BLOCK_HEIGHT = 4
 
-# Camera view dimensions in blocks (10x9 blocks is the typical Game Boy Color view)
-VIEW_WIDTH_BLOCKS = 10
-VIEW_HEIGHT_BLOCKS = 9
-
 # Colors
 BLACK = (0, 0, 0)
 
@@ -103,7 +99,7 @@ def load_animated_tiles_from_png(filepath):
         # Iterate through the image, extracting 8x8 tile frames
         for i in range(img.height // TILE_SIZE):
             # Create a new Pygame surface for each tile frame
-            surface = pygame.Surface((TILE_SIZE * 2, TILE_SIZE * 2), depth=8)
+            surface = pygame.Surface((TILE_SIZE, TILE_SIZE), depth=8)
             for y in range(TILE_SIZE):
                 for x in range(TILE_SIZE):
                     r, g, b, a = img.getpixel((x, i * TILE_SIZE + y))
@@ -121,10 +117,7 @@ def load_animated_tiles_from_png(filepath):
                             palette_index = 2
                         else:
                             palette_index = 3
-                    surface.set_at((x * 2, y * 2), palette_index)
-                    surface.set_at((x * 2 + 1, y * 2), palette_index)
-                    surface.set_at((x * 2, y * 2 + 1), palette_index)
-                    surface.set_at((x * 2 + 1, y * 2 + 1), palette_index)
+                    surface.set_at((x, y), palette_index)
             tiles.append(surface)
     except FileNotFoundError:
         print(f"Error: PNG file not found at {filepath}")
@@ -140,26 +133,16 @@ def main(map_name):
     # Get map dimensions dynamically
     map_width_blocks, map_height_blocks = get_map_dimensions(map_name, project_root)
 
-    # Calculate the full map dimensions in pixels (the "larger canvas")
-    MAP_PIXEL_WIDTH = map_width_blocks * BLOCK_WIDTH * TILE_SIZE
-    MAP_PIXEL_HEIGHT = map_height_blocks * BLOCK_HEIGHT * TILE_SIZE
-
-    # Calculate the actual display window dimensions (the "view size")
-    VIEW_PIXEL_WIDTH = VIEW_WIDTH_BLOCKS * BLOCK_WIDTH * TILE_SIZE
-    VIEW_PIXEL_HEIGHT = VIEW_HEIGHT_BLOCKS * BLOCK_HEIGHT * TILE_SIZE
+    # Calculate screen dimensions based on map size and tile/block constants
+    SCREEN_WIDTH = map_width_blocks * BLOCK_WIDTH * TILE_SIZE
+    SCREEN_HEIGHT = map_height_blocks * BLOCK_HEIGHT * TILE_SIZE
 
     # Initialize Pygame
     pygame.init()
-    # Set up the display window with the fixed view dimensions
-    screen = pygame.display.set_mode((VIEW_PIXEL_WIDTH, VIEW_PIXEL_HEIGHT))
-    print(f"Calculated VIEW_PIXEL_WIDTH: {VIEW_PIXEL_WIDTH}")
-    print(f"Calculated VIEW_PIXEL_HEIGHT: {VIEW_PIXEL_HEIGHT}")
-    print(f"Actual screen size: {screen.get_size()}")
+    # Set up the display window with calculated dimensions
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     # Set the window title
     pygame.display.set_caption(f"Opal Engine - {map_name.replace('_', ' ').title()}")
-
-    # Create a surface for the entire map (the "larger canvas")
-    map_surface = pygame.Surface((MAP_PIXEL_WIDTH, MAP_PIXEL_HEIGHT), depth=8)
 
     # --- Load Assets ---
     # Paths to various game assets
@@ -180,7 +163,6 @@ def main(map_name):
         day_palettes = get_palettes(bg_palette_path)
         # Load tile-to-palette mapping
         tile_palette_map = get_tile_palette_map(kanto_palette_map_path)
-        map_surface.set_palette(day_palettes['GRAY']) # Set the palette for the entire map surface
 
         # Load animated tile frames for water and flowers
         water_png_path = os.path.join(project_root, 'gfx', 'tilesets', 'water', 'water.png')
@@ -214,11 +196,6 @@ def main(map_name):
     animation_timer = 0 # Controls animation speed
     frame_counter = 0 # Used to slow down animation updates
 
-    # Calculate camera position to center the view on the map
-    # camera_x and camera_y represent the top-left corner of the camera view on the map_surface
-    camera_x = max(0, (MAP_PIXEL_WIDTH - VIEW_PIXEL_WIDTH) // 2)
-    camera_y = max(0, (MAP_PIXEL_HEIGHT - VIEW_PIXEL_HEIGHT) // 2)
-
     # --- Main Game Loop ---
     while running:
         # Event handling
@@ -226,8 +203,8 @@ def main(map_name):
             if event.type == pygame.QUIT:
                 running = False
 
-        # Clear the map surface
-        map_surface.fill(BLACK)
+        # Clear the screen
+        screen.fill(BLACK)
 
         # Update animation frames
         # The frame_counter increments every loop, but animation_timer only updates every 4 frames
@@ -236,7 +213,7 @@ def main(map_name):
         if frame_counter == 0:
             animation_timer = (animation_timer + 1) % 8
 
-        # --- Render Map onto map_surface ---
+        # --- Render Map ---
         # Iterate through each block in the map
         for block_y in range(map_height_blocks):
             for block_x in range(map_width_blocks):
@@ -279,14 +256,14 @@ def main(map_name):
                                 else:
                                     # Logic for static tiles (from kanto.png)
                                     # Create a new surface for the tile
-                                    current_tile_surface = pygame.Surface((TILE_SIZE * 2, TILE_SIZE * 2), depth=8)
+                                    current_tile_surface = pygame.Surface((TILE_SIZE, TILE_SIZE), depth=8)
                                     current_tile_surface.set_palette(palette)
 
                                     # Calculate the position of the tile within the main tileset image
                                     tileset_x = (tile_id % (tileset_image.width // TILE_SIZE)) * TILE_SIZE
                                     tileset_y = (tile_id // (tileset_image.width // TILE_SIZE)) * TILE_SIZE
 
-                                    # Copy pixel data from the tileset image to the tile surface, scaling 2x
+                                    # Copy pixel data from the tileset image to the tile surface
                                     for y_pixel in range(TILE_SIZE):
                                         for x_pixel in range(TILE_SIZE):
                                             # Get grayscale value from the tileset image
@@ -300,22 +277,15 @@ def main(map_name):
                                                 palette_index = 2
                                             else:
                                                 palette_index = 3
-                                            current_tile_surface.set_at((x_pixel * 2, y_pixel * 2), palette_index)
-                                            current_tile_surface.set_at((x_pixel * 2 + 1, y_pixel * 2), palette_index)
-                                            current_tile_surface.set_at((x_pixel * 2, y_pixel * 2 + 1), palette_index)
-                                            current_tile_surface.set_at((x_pixel * 2 + 1, y_pixel * 2 + 1), palette_index)
+                                            current_tile_surface.set_at((x_pixel, y_pixel), palette_index)
 
-                                # Calculate the position to blit the tile onto the map_surface
-                                screen_x = (block_x * BLOCK_WIDTH + tile_x) * TILE_SIZE * 2
-                                screen_y = (block_y * BLOCK_HEIGHT + tile_y) * TILE_SIZE * 2
+                                # Calculate the screen position to blit the tile
+                                screen_x = (block_x * BLOCK_WIDTH + tile_x) * TILE_SIZE
+                                screen_y = (block_y * BLOCK_HEIGHT + tile_y) * TILE_SIZE
 
-                                # Blit (draw) the tile surface onto the map_surface
+                                # Blit (draw) the tile surface onto the main screen
                                 if current_tile_surface:
-                                    map_surface.blit(current_tile_surface, (screen_x, screen_y))
-
-        # Blit the camera's view from the map_surface to the actual screen
-        # This creates the scrolling effect if the map is larger than the view
-        screen.blit(map_surface, (0, 0), (camera_x, camera_y, VIEW_PIXEL_WIDTH, VIEW_PIXEL_HEIGHT))
+                                    screen.blit(current_tile_surface, (screen_x, screen_y))
 
         # Update the full display Surface to the screen
         pygame.display.flip()
