@@ -4,6 +4,9 @@ import re
 import sys
 from PIL import Image
 
+from ..human_sprite import HumanSprite # Added import
+from ..player_movement import Player # Added import
+
 # Constants
 # TILE_SIZE: The size of a single tile in pixels (e.g., 8x8 pixels).
 TILE_SIZE = 8
@@ -95,10 +98,7 @@ def get_map_dimensions(map_name, project_root):
     Returns:
         tuple: A tuple containing (width_in_blocks, height_in_blocks).
     """
-    # Temporary override for PALLET_TOWN based on user's observation
-    if map_name == "PALLET_TOWN":
-        print(f"Overriding dimensions for {map_name}: 5x18 blocks (20 tiles wide)")
-        return 5, 18
+    
 
     map_constants_path = os.path.join(project_root, 'constants', 'map_constants.asm')
     try:
@@ -166,67 +166,49 @@ def load_tileset_tiles(tileset_image, palette):
 
 def load_animated_tiles_from_png(filepath, palette):
     """
-    Loads animated tile frames from a PNG file using Pygame's image loading.
+    Loads animated tile frames from a PNG file using PIL and Pygame.
     Assumes the PNG contains multiple 8x8 tile frames stacked vertically.
-    Converts RGBA image data to Pygame surfaces and applies the given palette.
-
-    Args:
-        filepath (str): The absolute path to the animated tiles PNG file.
-        palette (list): The palette (list of RGB tuples) to apply to the tile surfaces.
-
-    Returns:
-        list: A list of Pygame Surface objects, each representing an animated tile frame.
+    Manually maps pixel values to the 4-color palette.
     """
     tiles = []
     try:
-        # Load the image using Pygame
-        img_surface = pygame.image.load(filepath).convert_alpha() # Use convert_alpha for transparency
+        # Load the image using PIL (similar to load_tileset_tiles)
+        pil_image = Image.open(filepath).convert("L") # Convert to grayscale for consistent pixel value interpretation
 
-        # Iterate through the image, extracting 8x8 tile frames
-        for i in range(img_surface.get_height() // TILE_SIZE):
-            # Create a sub-surface for each 8x8 tile frame
-            tile_rect = pygame.Rect(0, i * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-            source_tile_surface = img_surface.subsurface(tile_rect).copy() # .copy() is important to make it independent
+        tileset_width_tiles = pil_image.width // TILE_SIZE
+        tileset_height_tiles = pil_image.height // TILE_SIZE
 
-            # Create a new 8-bit surface for the scaled tile
-            scaled_tile_surface = pygame.Surface((TILE_SIZE * TILE_RENDER_SCALE, TILE_SIZE * TILE_RENDER_SCALE), depth=8)
-            scaled_tile_surface.set_palette(palette)
+        for tile_y in range(tileset_height_tiles):
+            for tile_x in range(tileset_width_tiles): # This loop will only run once as animated tiles are stacked vertically
+                # Create a new Pygame surface for each tile, scaled by TILE_RENDER_SCALE
+                tile_surface = pygame.Surface((TILE_SIZE * TILE_RENDER_SCALE, TILE_SIZE * TILE_RENDER_SCALE), depth=8)
+                tile_surface.set_palette(palette)
 
-            # Blit the source tile onto the 8-bit surface. This performs the color reduction.
-            # Use SRCALPHA flag to handle transparency correctly during blitting.
-            scaled_tile_surface.blit(pygame.transform.scale(source_tile_surface, (TILE_SIZE * TILE_RENDER_SCALE, TILE_SIZE * TILE_RENDER_SCALE)), (0, 0))
-            
-            tiles.append(scaled_tile_surface)
-    except pygame.error as e:
+                # Extract the 8x8 tile region from the PIL image and map pixels to palette indices
+                for y_pixel in range(TILE_SIZE):
+                    for x_pixel in range(TILE_SIZE):
+                        grayscale_value = pil_image.getpixel((tile_x * TILE_SIZE + x_pixel, tile_y * TILE_SIZE + y_pixel))
+                        
+                        # Map grayscale to one of the 4 palette indices (0-3)
+                        if grayscale_value < 64:
+                            palette_index = 0
+                        elif grayscale_value < 128:
+                            palette_index = 1
+                        elif grayscale_value < 192:
+                            palette_index = 2
+                        else:
+                            palette_index = 3
+                        
+                        # Draw TILE_RENDER_SCALE x TILE_RENDER_SCALE pixel block for each source pixel to achieve scaling
+                        for sy in range(TILE_RENDER_SCALE):
+                            for sx in range(TILE_RENDER_SCALE):
+                                tile_surface.set_at((x_pixel * TILE_RENDER_SCALE + sx, y_pixel * TILE_RENDER_SCALE + sy), palette_index)
+                tiles.append(tile_surface)
+
+    except Exception as e: # Catch a broader exception for now to see if any other errors occur
         print(f"Error loading animated tiles from {filepath}: {e}")
     return tiles
 
-def load_player_sprite(filepath, palette):
-    """
-    Loads the player sprite from a PNG file, scales it, and applies the given palette.
-    Assumes the player sprite is 16x16 pixels in the source PNG.
-
-    Args:
-        filepath (str): The absolute path to the player sprite PNG file.
-        palette (list): The palette (list of RGB tuples) to apply to the sprite surface.
-
-    Returns:
-        pygame.Surface: The scaled and palettized player sprite surface.
-    """
-    try:
-        # Load the image using Pygame
-        img_surface = pygame.image.load(filepath).convert_alpha() # Use convert_alpha for transparency
-
-        # Create a new 8-bit surface for the scaled sprite
-        scaled_sprite_surface = pygame.Surface((16 * TILE_RENDER_SCALE, 16 * TILE_RENDER_SCALE), depth=8)
-        scaled_sprite_surface.set_palette(palette)
-
-        # Blit the source image onto the 8-bit surface. This performs the color reduction.
-        scaled_sprite_surface.blit(pygame.transform.scale(img_surface, (16 * TILE_RENDER_SCALE, 16 * TILE_RENDER_SCALE)), (0, 0))
-        return scaled_sprite_surface
-    except pygame.error as e:
-        print(f"Error loading player sprite from {filepath}: {e}")
-        return None
 
 def get_tileset_info(map_name, project_root):
     """
@@ -276,20 +258,16 @@ def get_tileset_info(map_name, project_root):
     metatiles_bin_path = os.path.join(project_root, 'data', 'tilesets', f'{tileset_base_name}_metatiles.bin')
     palette_map_asm_path = os.path.join(project_root, 'gfx', 'tilesets', f'{tileset_base_name}_palette_map.asm')
 
-    print(f"get_tileset_info returning PNG: {tileset_png_path}")
-    print(f"get_tileset_info returning BIN: {metatiles_bin_path}")
-    print(f"get_tileset_info returning PALETTE_MAP: {palette_map_asm_path}")
-
     return tileset_png_path, metatiles_bin_path, palette_map_asm_path
 
-def render_game_frame(screen, map_surface, player_sprite, camera_x, camera_y, VIEW_PIXEL_WIDTH, VIEW_PIXEL_HEIGHT, MAP_PIXEL_WIDTH, MAP_PIXEL_HEIGHT, map_width_blocks, map_height_blocks, block_ids, metatile_data, day_palettes, tile_palette_map, water_animation_frames, flower_animation_frames_cgb, player_x, player_y, animation_timer, pre_rendered_tiles):
+def render_game_frame(screen, map_surface, current_player_sprite, camera_x, camera_y, VIEW_PIXEL_WIDTH, VIEW_PIXEL_HEIGHT, MAP_PIXEL_WIDTH, MAP_PIXEL_HEIGHT, map_width_blocks, map_height_blocks, block_ids, metatile_data, day_palettes, tile_palette_map, water_animation_frames, flower_animation_frames_cgb, player_render_x, player_render_y, animation_timer, pre_rendered_tiles, clock, FPS):
     """
     Renders a single frame of the game, including the map and player sprite.
 
     Args:
         screen (pygame.Surface): The main display surface.
         map_surface (pygame.Surface): The surface representing the entire map.
-        player_sprite (pygame.Surface): The player's sprite surface.
+        current_player_sprite (pygame.Surface): The player's sprite surface (current animation frame).
         camera_x (int): The X-coordinate of the camera's top-left corner on the map_surface.
         camera_y (int): The Y-coordinate of the camera's top-left corner on the map_surface.
         VIEW_PIXEL_WIDTH (int): The width of the view area in pixels.
@@ -305,8 +283,8 @@ def render_game_frame(screen, map_surface, player_sprite, camera_x, camera_y, VI
         tile_palette_map (list): Mapping of tile IDs to palette names.
         water_animation_frames (list): List of Pygame Surfaces for water animation.
         flower_animation_frames_cgb (list): List of Pygame Surfaces for flower animation.
-        player_x (int): Player's X-coordinate in tile units.
-        player_y (int): Player's Y-coordinate in tile units.
+        player_render_x (int): Player's X-coordinate in pixel units for rendering.
+        player_render_y (int): Player's Y-coordinate in pixel units for rendering.
         animation_timer (int): Timer for controlling animation frames.
     """
     # Clear the map surface for the new frame
@@ -343,14 +321,16 @@ def render_game_frame(screen, map_surface, player_sprite, camera_x, camera_y, VI
                             # Handle animated water tiles (tile_id 20)
                             if tile_id == 20 and water_animation_frames:
                                 # Select the current animation frame for water
-                                frame_index = (animation_timer // 2) % 4
+                                frame_index = (animation_timer // 16) % 4
                                 current_tile_surface = water_animation_frames[frame_index]
                                 current_tile_surface.set_palette(palette)
 
                             # Handle animated flower tiles (tile_id 3)
                             elif tile_id == 3 and flower_animation_frames_cgb:
+                                
+                                
                                 # Select the current animation frame for flowers
-                                frame_index = (animation_timer // 2) % 2
+                                frame_index = (animation_timer // 32) % 2
                                 current_tile_surface = flower_animation_frames_cgb[frame_index]
                                 current_tile_surface.set_palette(palette)
 
@@ -372,11 +352,8 @@ def render_game_frame(screen, map_surface, player_sprite, camera_x, camera_y, VI
                                 map_surface.blit(current_tile_surface, (screen_x, screen_y))
 
     # --- Render Player Sprite ---
-    # Calculate player's pixel position on the map_surface
-    # Player coordinates (player_x, player_y) are in tile units, so multiply by TILE_SIZE * TILE_RENDER_SCALE for pixel position
-    player_pixel_x = player_x * TILE_SIZE * TILE_RENDER_SCALE
-    player_pixel_y = player_y * TILE_SIZE * TILE_RENDER_SCALE
-    map_surface.blit(player_sprite, (player_pixel_x, player_pixel_y))
+    # Player coordinates (player_render_x, player_render_y) are already in pixel units
+    map_surface.blit(current_player_sprite, (player_render_x, player_render_y))
 
     # Blit the camera's view from the map_surface to the actual screen
     # This creates the scrolling effect if the map is larger than the view.
@@ -389,6 +366,10 @@ def render_game_frame(screen, map_surface, player_sprite, camera_x, camera_y, VI
 
     # Update the full display Surface to the screen
     pygame.display.flip()
+
+    # Increment animation timer and control frame rate
+    animation_timer += 1
+    clock.tick(FPS)
 
 def main(map_name_from_arg):
     """
@@ -408,7 +389,7 @@ def main(map_name_from_arg):
 
     # Calculate the full map dimensions in pixels (the "larger canvas" where the entire map is drawn)
     # These dimensions are scaled by TILE_RENDER_SCALE to accommodate the scaled tiles.
-    MAP_PIXEL_WIDTH = map_width_blocks * BLOCK_WIDTH * TILE_SIZE * TILE_RENDER_SCALE 
+    MAP_PIXEL_WIDTH = map_width_blocks * BLOCK_WIDTH * TILE_SIZE * TILE_RENDER_SCALE
     MAP_PIXEL_HEIGHT = map_height_blocks * BLOCK_HEIGHT * TILE_SIZE * TILE_RENDER_SCALE 
 
     # Calculate the actual display window dimensions (the "view size" that the user sees).
@@ -449,7 +430,7 @@ def main(map_name_from_arg):
     # Dynamically construct the map file path (e.g., "PalletTown.blk" from "PALLET_TOWN")
     # The map_name is converted to a format matching the .blk filenames (e.g., REDS_HOUSE_2F -> RedsHouse2F.blk)
     # Convert map_name_from_arg (e.g., "PALLET_TOWN") to PascalCase (e.g., "PalletTown")
-    # This handles names like "REDS_HOUSE_2F" -> "RedsHouse2F"
+    # This handles names like "REDS_HOUSE_2F" -> "RedsHouse2F"}
     pascal_case_map_name = "".join([s.capitalize() for s in map_name_from_arg.lower().split('_')])
     map_filename = f'{pascal_case_map_name}.blk'
     map_path = os.path.join(project_root, 'maps', map_filename)
@@ -484,10 +465,11 @@ def main(map_name_from_arg):
         flower_animation_frames_cgb = load_animated_tiles_from_png(flower_cgb_1_png_path, day_palettes['GRAY']) + \
                                       load_animated_tiles_from_png(flower_cgb_2_png_path, day_palettes['GRAY'])
 
-        # Load player sprite and apply the 'GRAY' palette
-        player_sprite_path = os.path.join(project_root, 'gfx', 'sprites', 'chris.png')
-        player_sprite = load_player_sprite(player_sprite_path, day_palettes['GRAY'])
-        if player_sprite is None:
+        # Load player sprite using HumanSprite
+        player_sprite_path = os.path.join(project_root, 'gfx', 'sprites', 'chris.png') # Corrected path
+        player_human_sprite = HumanSprite(player_sprite_path, day_palettes['GRAY'])
+        if player_human_sprite.get_sprite('facing_down') is None: # Check if any sprite loaded successfully
+            print("Error: Could not load player human sprite. Check chris.png and human_sprite.py.")
             pygame.quit()
             return
 
@@ -501,7 +483,7 @@ def main(map_name_from_arg):
         with open(map_path, 'rb') as f:
             block_ids = f.read()
     except FileNotFoundError:
-        print(f"Error: Map file not found at {map_path}. Please ensure the map name is correct and the .blk file exists.")
+        pass
         pygame.quit()
         return
 
@@ -513,22 +495,19 @@ def main(map_name_from_arg):
     # For REDS_HOUSE_2F (4x4 blocks), a good starting point might be the center.
     # A block is 4x4 tiles, so a 4x4 block map is 16x16 tiles.
     # Center tile would be (8, 8).
-    player_x = (map_width_blocks * BLOCK_WIDTH) // 2
-    player_y = (map_height_blocks * BLOCK_HEIGHT) // 2
+    player_initial_x = (map_width_blocks * BLOCK_WIDTH) // 2
+    player_initial_y = (map_height_blocks * BLOCK_HEIGHT) // 2
+
+    # Instantiate Player object
+    player = Player(player_human_sprite, player_initial_x, player_initial_y, TILE_SIZE, TILE_RENDER_SCALE)
 
     # Game loop variables
     running = True
     animation_timer = 0 # Controls animation speed
     frame_counter = 0 # Used to slow down animation updates
 
-    # Calculate camera position to center the view on the player
-    # The player is 16x16 pixels, so we subtract half its size to truly center
-    # The camera should follow the player, but not go off the map edges.
-    player_pixel_x = player_x * TILE_SIZE * TILE_RENDER_SCALE
-    player_pixel_y = player_y * TILE_SIZE * TILE_RENDER_SCALE
-
-    camera_x = max(0, min(player_pixel_x + (16 * TILE_RENDER_SCALE // 2) - (VIEW_PIXEL_WIDTH // 2), MAP_PIXEL_WIDTH - VIEW_PIXEL_WIDTH))
-    camera_y = max(0, min(player_pixel_y + (16 * TILE_RENDER_SCALE // 2) - (VIEW_PIXEL_HEIGHT // 2), MAP_PIXEL_HEIGHT - VIEW_PIXEL_HEIGHT))
+    FPS = 60 # Frames per second
+    clock = pygame.time.Clock()
 
     # --- Main Game Loop ---
     while running:
@@ -536,9 +515,28 @@ def main(map_name_from_arg):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            player.handle_input(event) # Pass events to player for movement
+
+        # Update player state (position, animation)
+        player.update()
+
+        # Get current player sprite and position for rendering
+        current_player_sprite = player.get_current_sprite()
+        player_pixel_x, player_pixel_y = player.get_pixel_position()
+
+        # Calculate camera position to center the view on the player
+        # The player is 16x16 pixels, so we subtract half its size to truly center
+        # The camera should follow the player, but not go off the map edges.
+        # Note: player_pixel_x and player_pixel_y are now managed by the Player class
+        camera_x = max(0, min(player_pixel_x + 32 - (VIEW_PIXEL_WIDTH // 2), MAP_PIXEL_WIDTH - VIEW_PIXEL_WIDTH))
+        camera_y = max(0, min(player_pixel_y + 32 - (VIEW_PIXEL_HEIGHT // 2), MAP_PIXEL_HEIGHT - VIEW_PIXEL_HEIGHT))
 
         # Render the current game frame
-        render_game_frame(screen, map_surface, player_sprite, camera_x, camera_y, VIEW_PIXEL_WIDTH, VIEW_PIXEL_HEIGHT, MAP_PIXEL_WIDTH, MAP_PIXEL_HEIGHT, map_width_blocks, map_height_blocks, block_ids, metatile_data, day_palettes, tile_palette_map, water_animation_frames, flower_animation_frames_cgb, player_x, player_y, animation_timer, pre_rendered_tiles)
+        render_game_frame(screen, map_surface, current_player_sprite, camera_x, camera_y, VIEW_PIXEL_WIDTH, VIEW_PIXEL_HEIGHT, MAP_PIXEL_WIDTH, MAP_PIXEL_HEIGHT, map_width_blocks, map_height_blocks, block_ids, metatile_data, day_palettes, tile_palette_map, water_animation_frames, flower_animation_frames_cgb, player_pixel_x, player_pixel_y, animation_timer, pre_rendered_tiles, clock, FPS)
+
+        # Increment animation timer and control frame rate
+        animation_timer += 1
+        clock.tick(FPS)
 
 if __name__ == "__main__":
     # This block runs when the script is executed directly
@@ -548,6 +546,6 @@ if __name__ == "__main__":
     else:
         # Otherwise, default to "PALLET_TOWN"
         map_name_arg = "PALLET_TOWN"
-        print(f"No map name provided. Defaulting to {map_name_arg}.")
+        pass
     # Call the main function with the determined map name
     main(map_name_arg)

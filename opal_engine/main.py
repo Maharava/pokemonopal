@@ -5,7 +5,7 @@ import os
 # This allows importing modules within opal_engine as if it were a package
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from opal_engine.gfx import engine
+from opal_engine.gfx import map_render
 
 if __name__ == "__main__":
-    engine.main()
+    map_render.main("PALLET_TOWN") # Pass the default map name
